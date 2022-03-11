@@ -1,9 +1,10 @@
 package base;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Objects;
 
-public class Folder {
+public class Folder implements Comparable<Folder> {
 	private ArrayList<Note> notes;
 	private String name;
 	
@@ -56,5 +57,82 @@ public class Folder {
 		}
 		
 		return name + ":" + nText + ":" + nImage;
+	}
+	
+	@Override
+	public int compareTo(Folder f) {
+		if(this.name.compareTo(f.name) > 0) {
+			return 1;
+		}
+		else if(this.name.compareTo(f.name) < 0) {
+			return -1;
+		}
+		else {
+			return 0;
+		}
+		
+	}
+	
+	public void sortNotes() {
+		Collections.sort(notes);
+	}
+	
+	public ArrayList<Note> searchNotes(String keywords){
+		keywords = keywords.toLowerCase();
+		String[] keys = keywords.split(" ");
+		ArrayList<Note> new_note = new ArrayList<Note>();
+		new_note.addAll(notes);
+		String OR = "or";
+		for(int i = 0; i < keys.length ; i++) {
+			if(keys[i+1].equals(OR)) {
+				String k1 = keys[i];
+				String k2 = keys[i+2];
+				for(Note n : notes) {
+					if(n instanceof TextNote) {
+						TextNote t_note = (TextNote) n;
+						String n1 = t_note.getTitle().toLowerCase();
+						String n2 = t_note.content.toLowerCase();
+						if(!(n1.contains(k1) || n1.contains(k2) || n2.contains(k1) || n2.contains(k2))) {
+							if(new_note.contains(n)) {
+								new_note.remove(n);
+							}
+						}
+					}
+					else {
+						String n1 = n.getTitle().toLowerCase();
+						if(!(n1.contains(k1) || n1.contains(k2))) {
+							if(new_note.contains(n)) {
+								new_note.remove(n);
+							}
+						}
+					}
+				}
+				i += 2;
+			}
+			else {
+				String k = keys[i];
+				for(Note n : notes) {
+					if(n instanceof TextNote) {
+						TextNote t_note = (TextNote)n;
+						String n1 = t_note.getTitle().toLowerCase();
+						String n2 = t_note.content.toLowerCase();
+						if(!(n1.contains(k) || n2.contains(k))) {
+							if(new_note.contains(n)) {
+								new_note.remove(n);
+							}
+						}
+					}
+					else {
+						String n1 = n.getTitle().toLowerCase();
+						if(!(n1.contains(k))) {
+							if(new_note.contains(n)) {
+								new_note.remove(n);
+							}
+						}
+					}
+				}
+			}
+		}
+		return new_note;
 	}
 }
