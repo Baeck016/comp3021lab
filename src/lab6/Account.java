@@ -1,6 +1,7 @@
 package lab6;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -8,6 +9,22 @@ import java.util.function.Predicate;
 
 
 public class Account {
+	@Override
+	public int hashCode() {
+		return Objects.hash(balance, id);
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof Account))
+			return false;
+		Account other = (Account) obj;
+		return balance == other.balance && id == other.id;
+	}
+
 	public int id;
 	public int balance;
 
