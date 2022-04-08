@@ -105,8 +105,31 @@ public class NoteBookWindow extends Application {
 		Button buttonSave = new Button("Save");
 		buttonSave.setPrefSize(100, 20);
 		buttonSave.setDisable(true);
+		Label searchLabel = new Label("Search :");
+		TextField textSearch = new TextField();
+		Button buttonSearch = new Button("Search");
+		Button buttonRemove = new Button("Clear Search");
+		
+		buttonSearch.setOnAction(new EventHandler<ActionEvent>(){
+			@Override
+			public void handle(ActionEvent event) {
+				currentSearch = textSearch.getText();
+				textAreaNote.setText("");
+				updateListView(2);
+			}
+		});
+		
+		buttonRemove.setOnAction(new EventHandler<ActionEvent>(){
+			@Override
+			public void handle(ActionEvent event) {
+				currentSearch = "";
+				textSearch.setText("");
+				textAreaNote.setText("");
+				updateListView(1);
+			}
+		});
 
-		hbox.getChildren().addAll(buttonLoad, buttonSave);
+		hbox.getChildren().addAll(buttonLoad, buttonSave, searchLabel , textSearch , buttonSearch , buttonRemove);
 
 		return hbox;
 	}
@@ -121,17 +144,20 @@ public class NoteBookWindow extends Application {
 		VBox vbox = new VBox();
 		vbox.setPadding(new Insets(10)); // Set all sides to 10
 		vbox.setSpacing(8); // Gap between nodes
+		
 
 		// TODO: This line is a fake folder list. We should display the folders in noteBook variable! Replace this with your implementation
-		foldersComboBox.getItems().addAll("FOLDER NAME 1", "FOLDER NAME 2", "FOLDER NAME 3");
-
+		for(Folder f : noteBook.getFolders()) {
+			foldersComboBox.getItems().addAll(f.getName());
+		}
+		
 		foldersComboBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
 			@Override
 			public void changed(ObservableValue ov, Object t, Object t1) {
 				currentFolder = t1.toString();
 				// this contains the name of the folder selected
 				// TODO update listview
-				updateListView();
+				updateListView(1);
 
 			}
 
@@ -151,6 +177,15 @@ public class NoteBookWindow extends Application {
 				// TODO load the content of the selected note in
 				// textAreNote
 				String content = "";
+				for(Folder f : noteBook.getFolders()) {
+					if(f.getName() == currentFolder) {
+						for(Note n : f.getNotes()) {
+							if(n.getTitle() == title) {
+								content = ((TextNote)n).content ;
+							}
+						}
+					}
+				}
 				textAreaNote.setText(content);
 
 			}
@@ -163,11 +198,26 @@ public class NoteBookWindow extends Application {
 		return vbox;
 	}
 
-	private void updateListView() {
+	private void updateListView(int type) {
 		ArrayList<String> list = new ArrayList<String>();
 
 		// TODO populate the list object with all the TextNote titles of the
 		// currentFolder
+		if(type == 1) {
+			for(Folder f : noteBook.getFolders()) {
+				if(f.getName() == currentFolder) {
+					for(Note n : f.getNotes()) {
+						list.add(n.getTitle());
+					}
+				}
+			}
+		}
+		else {
+			List<Note> note = noteBook.searchNotes(currentSearch);
+			for(Note n : note) {
+				list.add(n.getTitle());
+			}
+		}
 
 		ObservableList<String> combox2 = FXCollections.observableArrayList(list);
 		titleslistView.setItems(combox2);
@@ -203,9 +253,9 @@ public class NoteBookWindow extends Application {
 				"Each lab has 2 credits, 1 for attendence and the other is based the completeness of your lab.");
 
 		nb.createTextNote("Books", "The Throwback Special: A Novel",
-				"Here is the absorbing story of twenty-two men who gather every fall to painstakingly reenact what ESPN called “the most shocking play in NFL history” and the Washington Redskins dubbed the “Throwback Special”: the November 1985 play in which the Redskins’ Joe Theismann had his leg horribly broken by Lawrence Taylor of the New York Giants live on Monday Night Football. With wit and great empathy, Chris Bachelder introduces us to Charles, a psychologist whose expertise is in high demand; George, a garrulous public librarian; Fat Michael, envied and despised by the others for being exquisitely fit; Jeff, a recently divorced man who has become a theorist of marriage; and many more. Over the course of a weekend, the men reveal their secret hopes, fears, and passions as they choose roles, spend a long night of the soul preparing for the play, and finally enact their bizarre ritual for what may be the last time. Along the way, mishaps, misunderstandings, and grievances pile up, and the comforting traditions holding the group together threaten to give way. The Throwback Special is a moving and comic tale filled with pitch-perfect observations about manhood, marriage, middle age, and the rituals we all enact as part of being alive.");
+				"Here is the absorbing story of twenty-two men who gather every fall to painstakingly reenact what ESPN called â€œthe most shocking play in NFL historyâ€� and the Washington Redskins dubbed the â€œThrowback Specialâ€�: the November 1985 play in which the Redskinsâ€™ Joe Theismann had his leg horribly broken by Lawrence Taylor of the New York Giants live on Monday Night Football. With wit and great empathy, Chris Bachelder introduces us to Charles, a psychologist whose expertise is in high demand; George, a garrulous public librarian; Fat Michael, envied and despised by the others for being exquisitely fit; Jeff, a recently divorced man who has become a theorist of marriage; and many more. Over the course of a weekend, the men reveal their secret hopes, fears, and passions as they choose roles, spend a long night of the soul preparing for the play, and finally enact their bizarre ritual for what may be the last time. Along the way, mishaps, misunderstandings, and grievances pile up, and the comforting traditions holding the group together threaten to give way. The Throwback Special is a moving and comic tale filled with pitch-perfect observations about manhood, marriage, middle age, and the rituals we all enact as part of being alive.");
 		nb.createTextNote("Books", "Another Brooklyn: A Novel",
-				"The acclaimed New York Times bestselling and National Book Award–winning author of Brown Girl Dreaming delivers her first adult novel in twenty years. Running into a long-ago friend sets memory from the 1970s in motion for August, transporting her to a time and a place where friendship was everything—until it wasn’t. For August and her girls, sharing confidences as they ambled through neighborhood streets, Brooklyn was a place where they believed that they were beautiful, talented, brilliant—a part of a future that belonged to them. But beneath the hopeful veneer, there was another Brooklyn, a dangerous place where grown men reached for innocent girls in dark hallways, where ghosts haunted the night, where mothers disappeared. A world where madness was just a sunset away and fathers found hope in religion. Like Louise Meriwether’s Daddy Was a Number Runner and Dorothy Allison’s Bastard Out of Carolina, Jacqueline Woodson’s Another Brooklyn heartbreakingly illuminates the formative time when childhood gives way to adulthood—the promise and peril of growing up—and exquisitely renders a powerful, indelible, and fleeting friendship that united four young lives.");
+				"The acclaimed New York Times bestselling and National Book Awardâ€“winning author of Brown Girl Dreaming delivers her first adult novel in twenty years. Running into a long-ago friend sets memory from the 1970s in motion for August, transporting her to a time and a place where friendship was everythingâ€”until it wasnâ€™t. For August and her girls, sharing confidences as they ambled through neighborhood streets, Brooklyn was a place where they believed that they were beautiful, talented, brilliantâ€”a part of a future that belonged to them. But beneath the hopeful veneer, there was another Brooklyn, a dangerous place where grown men reached for innocent girls in dark hallways, where ghosts haunted the night, where mothers disappeared. A world where madness was just a sunset away and fathers found hope in religion. Like Louise Meriwetherâ€™s Daddy Was a Number Runner and Dorothy Allisonâ€™s Bastard Out of Carolina, Jacqueline Woodsonâ€™s Another Brooklyn heartbreakingly illuminates the formative time when childhood gives way to adulthoodâ€”the promise and peril of growing upâ€”and exquisitely renders a powerful, indelible, and fleeting friendship that united four young lives.");
 
 		nb.createTextNote("Holiday", "Vietnam",
 				"What I should Bring? When I should go? Ask Romina if she wants to come");

@@ -85,7 +85,7 @@ public class Folder implements Comparable<Folder>, Serializable {
 		new_note.addAll(notes);
 		String OR = "or";
 		for(int i = 0; i < keys.length ; i++) {
-			if(keys[i+1].equals(OR)) {
+			if(i+1 < keys.length && keys[i+1].equals(OR)) {
 				String k1 = keys[i];
 				String k2 = keys[i+2];
 				for(Note n : notes) {
