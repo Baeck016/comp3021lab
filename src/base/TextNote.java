@@ -66,4 +66,8 @@ public class TextNote extends Note {
 			e.printStackTrace();
 		}
 	}
+	
+	public void newContent(String content) {
+		this.content = content;
+	}
 }
