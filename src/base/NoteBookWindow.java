@@ -213,7 +213,12 @@ public class NoteBookWindow extends Application {
 		foldersComboBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
 			@Override
 			public void changed(ObservableValue ov, Object t, Object t1) {
-				currentFolder = t1.toString();
+				if (t1 != null){
+					currentFolder = t1.toString();
+				}
+				else{
+					currentFolder = "";
+				}
 				// this contains the name of the folder selected
 				// TODO update listview
 				updateListView(1);
@@ -229,8 +234,13 @@ public class NoteBookWindow extends Application {
 		titleslistView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Object>() {
 			@Override
 			public void changed(ObservableValue ov, Object t, Object t1) {
-				if (t1 == null)
+				if (t1 == null){
+					currentNote = "";
 					return;
+				}
+				else{
+					currentNote = t1.toString();
+				}
 				String title = t1.toString();
 				// This is the selected title
 				// TODO load the content of the selected note in
@@ -396,6 +406,7 @@ public class NoteBookWindow extends Application {
             		        System.out.println("Pressed OK.");
             		    }
             		});
+            		return;
 	        	}
 	        	else {
 	        		Folder folder = null;
